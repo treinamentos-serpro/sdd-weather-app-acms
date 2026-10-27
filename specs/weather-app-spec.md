@@ -15,14 +15,15 @@ A aplicação usará Open-Meteo como fonte de dados, não exigirá autenticaçã
 
 ## User Stories
 
-- **US-01:** Como pessoa que quer consultar o tempo, quero buscar e selecionar uma cidade para ver informações meteorológicas da localização correta.
-- **US-02:** Como pessoa que selecionou uma cidade, quero ver as condições atuais para entender o tempo naquele local.
-- **US-03:** Como pessoa que está planejando os próximos dias, quero consultar a previsão de cinco dias para antecipar as condições meteorológicas.
-- **US-04:** Como pessoa que prefere uma unidade específica, quero alternar entre Celsius e Fahrenheit para interpretar as temperaturas com facilidade.
+- **US-01 — RF-01:** Como viajante planejador, quero buscar e selecionar a cidade de destino para consultar as informações meteorológicas daquele local.
+- **US-02 — RF-02:** Como decisor do dia a dia, quero consultar o clima atual da minha cidade para decidir rapidamente como me vestir ou se levo guarda-chuva.
+- **US-03 — RF-03:** Como viajante planejador, quero consultar a previsão de hoje e dos quatro dias seguintes para organizar minha semana.
+- **US-04 — RF-01:** Como viajante planejador, quero distinguir localidades com nomes iguais nos resultados para selecionar a cidade correta para minha viagem.
+- **US-05 — RF-04:** Como decisor do dia a dia, quero alternar entre Celsius e Fahrenheit para interpretar rapidamente as temperaturas na unidade que prefiro.
 
 ## Acceptance Criteria
 
-- **CA-01 — RF-01 / US-01:**
+- **CA-01 — RF-01 / US-01, US-04:**
   - Quando o usuário enviar uma consulta de cidade e houver resultados, o sistema apresenta os resultados disponíveis para seleção.
   - Quando a consulta não produzir resultados, o sistema informa que nenhuma cidade correspondente foi encontrada.
   - Quando houver resultados com nomes de cidade iguais, o sistema apresenta informações de localização disponíveis que ajudem a distingui-los, como região ou país.
