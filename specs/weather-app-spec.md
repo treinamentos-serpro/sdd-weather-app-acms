@@ -149,6 +149,21 @@ não são compromissos de serviço.
   interface são apresentados em pt-BR. Temperaturas exibem explicitamente °C ou
   °F, conforme a unidade selecionada.
 
+## Matriz de Rastreabilidade
+
+| User Story | Acceptance Criteria relacionados | Requisitos não funcionais relevantes |
+| --- | --- | --- |
+| US-01 — Pesquisar e selecionar cidade | CA-01 — envio, validação, carregamento, resultados, seleção e falhas da busca; CA-05 — estados e repetição da consulta | RNF-01 — responsividade dos controles; RNF-02 — operação por teclado e estados acessíveis; RNF-03 — tempo de apresentação dos resultados da busca; RNF-04 — distinção entre falha e ausência de resultados e nova tentativa; RNF-05 — textos em pt-BR |
+| US-02 — Distinguir cidades homônimas | CA-01 — metadados geográficos nos resultados e identidade da cidade selecionada | RNF-01 — apresentação responsiva dos resultados; RNF-02 — seleção acessível; RNF-05 — idioma da interface |
+| US-03 — Consultar clima atual | CA-02 — campos do clima atual, dados parciais, falha e nova tentativa; CA-05 — carregamento, isolamento de falhas e troca de cidade | RNF-01 — apresentação responsiva; RNF-02 — estados anunciáveis e controles acessíveis; RNF-04 — não exibir dados incorretos e permitir nova tentativa; RNF-05 — idioma e unidade explícita |
+| US-04 — Consultar previsão dos próximos cinco dias | CA-03 — cinco datas locais, associação de valores, dados incompletos e nova tentativa; CA-05 — carregamento, isolamento de falhas e troca de cidade | RNF-01 — apresentação responsiva; RNF-02 — estados anunciáveis e conteúdo acessível; RNF-04 — tratar falhas sem apresentar dados incorretos; RNF-05 — idioma e formatos de data |
+| US-05 — Alternar Celsius e Fahrenheit | CA-04 — unidade inicial, atualização imediata, precisão, escopo e duração da preferência | RNF-01 — acesso responsivo ao controle; RNF-02 — operação por teclado e foco visível; RNF-05 — exibição explícita de °C ou °F |
+| US-06 — Entender estados e tentar novamente | CA-01 — estados e repetição da busca; CA-02 — falha e repetição do clima atual; CA-03 — falha e repetição da previsão; CA-05 — estados de carregamento, sucesso, ausência, falha e troca de cidade | RNF-01 — acesso responsivo aos controles; RNF-02 — estados anunciáveis e operação por teclado; RNF-04 — resiliência e nova tentativa; RNF-05 — mensagens em pt-BR |
+
+Os RNFs marcados como proposta ou meta continuam sujeitos à aprovação indicada
+em suas definições; esta matriz registra rastreabilidade, não transforma essas
+metas em compromissos ou critérios de aceite adicionais.
+
 ## Edge Cases
 
 | Situação | Comportamento esperado |
