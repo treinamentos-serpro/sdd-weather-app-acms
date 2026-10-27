@@ -21,7 +21,7 @@ continuam sujeitas à validação com as partes interessadas.
 - **RF-02 — Consultar clima atual:** apresentar as condições meteorológicas
   atuais da cidade selecionada.
 - **RF-03 — Consultar previsão:** apresentar a previsão do tempo para os cinco
-  dias seguintes à data da consulta.
+  dias, considerando o dia da consulta e os quatro dias seguintes.
 - **RF-04 — Alternar unidade de temperatura:** permitir alternar entre Celsius
   e Fahrenheit para exibir temperaturas.
 
@@ -56,7 +56,7 @@ continuam sujeitas à validação com as partes interessadas.
 - **Dados indisponíveis ou desatualizados:** falhas na fonte meteorológica ou
   na conexão podem impedir a consulta ou apresentar informações antigas.
 - **Escopo indefinido da previsão:** não está claro quais dados devem ser
-  exibidos nem como interpretar “cinco dias”.
+  exibidos para cada dia.
 - **Experiência móvel insuficiente:** sem critérios de responsividade e
   dispositivos-alvo, a interface pode ser difícil de usar em certos aparelhos.
 - **Metas de qualidade não validadas:** os valores sugeridos de desempenho,
@@ -76,36 +76,52 @@ continuam sujeitas à validação com as partes interessadas.
 3. Quais informações compõem o “clima atual” (por exemplo, temperatura,
    sensação térmica, condição, umidade ou vento)?
 4. Quais informações devem aparecer para cada dia da previsão?
-5. “Previsão de cinco dias” significa hoje mais os quatro dias seguintes ou
-   cinco dias completos a partir de amanhã?
-6. Com que frequência as informações meteorológicas devem ser atualizadas?
-7. Qual deve ser o comportamento quando a cidade não for encontrada, a conexão
+5. Com que frequência as informações meteorológicas devem ser atualizadas?
+6. Qual deve ser o comportamento quando a cidade não for encontrada, a conexão
    falhar ou a fonte de dados estiver indisponível?
-8. A unidade escolhida deve ser mantida entre consultas ou sessões?
-9. A alternância entre Celsius e Fahrenheit se aplica apenas à temperatura?
-10. Quais dispositivos, tamanhos de tela e navegadores móveis devem ser
-    suportados?
-11. Há requisitos de idioma, localização, acessibilidade ou conformidade
-    específicos?
-12. As metas sugeridas de 2 segundos no percentil 95, 99,9% de disponibilidade
+7. A unidade escolhida deve ser mantida entre consultas ou sessões?
+8. A alternância entre Celsius e Fahrenheit se aplica apenas à temperatura?
+9. Quais dispositivos, tamanhos de tela e navegadores móveis devem ser
+   suportados?
+10. Há requisitos de localização, acessibilidade ou conformidade específicos?
+11. As metas sugeridas de 2 segundos no percentil 95, 99,9% de disponibilidade
     mensal e conformidade WCAG 2.2 nível AA são adequadas? Quais metas de
     carregamento inicial e limites de uso devem ser atendidos?
-13. O critério sugerido de não haver rolagem horizontal a partir de 320 px é
+12. O critério sugerido de não haver rolagem horizontal a partir de 320 px é
     adequado? Quais orientações, navegadores e dispositivos devem ser
     suportados?
+
+## Decisões
+
+- **Fonte de dados: Open-Meteo, sem API key.** Define o provedor meteorológico
+  e evita a necessidade de configurar uma chave de API. Resolve a indefinição
+  sobre o provedor registrada nas suposições; não define a cobertura geográfica.
+- **Horizonte da previsão: hoje mais os quatro dias seguintes.** Torna explícita
+  a interpretação de “cinco dias” e resolve a pergunta sobre incluir hoje ou
+  mostrar cinco dias completos a partir de amanhã.
+- **Unidade padrão: Celsius.** Define a unidade exibida inicialmente. A
+  manutenção da unidade escolhida entre consultas ou sessões e o escopo da
+  alternância para outras medidas continuam em aberto.
+- **Sem autenticação e sem persistência no servidor.** Define que a consulta
+  não exige conta e que o servidor não armazenará dados do usuário. Esclarece
+  o escopo de autenticação e persistência; não decide se a preferência de
+  unidade será mantida no cliente.
+- **Idioma da interface: pt-BR.** Define o idioma dos textos da aplicação e
+  resolve a parte de idioma da pergunta sobre requisitos de localização,
+  acessibilidade ou conformidade. Os demais requisitos dessa pergunta
+  continuam em aberto.
 
 ## Suposições
 
 - A consulta de clima atual e da previsão ocorre para uma cidade selecionada
   pelo usuário.
 - Celsius e Fahrenheit são opções de exibição da temperatura.
-- “Cinco dias” descreve o horizonte da previsão, mas sua interpretação exata
-  permanece pendente de confirmação.
+- “Cinco dias” corresponde ao dia da consulta e aos quatro dias seguintes.
 - “Usar em dispositivos móveis” implica uma interface responsiva e utilizável
   em telas móveis; suporte a aplicativo nativo não foi solicitado.
 - As metas numéricas e o nível de conformidade listados nos requisitos
   não-funcionais são propostas iniciais para discussão, não compromissos
   aprovados.
-- Não se presume provedor de dados, cobertura geográfica, persistência de
-  preferências ou atualização automática; essas decisões dependem das
+- Open-Meteo é a fonte de dados definida; cobertura geográfica, persistência
+  da preferência de unidade e atualização automática ainda dependem das
   respostas às perguntas em aberto.
