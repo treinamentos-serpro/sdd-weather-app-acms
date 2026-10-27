@@ -2,116 +2,218 @@
 
 ## Overview
 
-O Weather App permite que usuários pesquisem cidades e consultem as condições meteorológicas atuais e a previsão para cinco dias, contando o dia da consulta e os quatro dias seguintes. A interface será em pt-BR, deverá ser utilizável em dispositivos móveis e oferecer temperaturas em Celsius ou Fahrenheit.
+Aplicação web em pt-BR para pesquisar uma cidade, consultar seu clima atual e
+ver a previsão diária de hoje e dos quatro dias seguintes. A fonte meteorológica
+é Open-Meteo; não há autenticação nem persistência de dados do usuário no
+servidor. A temperatura é exibida inicialmente em Celsius e pode ser alternada
+para Fahrenheit.
 
-A aplicação usará Open-Meteo como fonte de dados, não exigirá autenticação e não armazenará dados do usuário no servidor. Celsius será a unidade inicial.
+Esta especificação define o comportamento observável do produto. Limites
+operacionais ainda sujeitos à aprovação estão identificados como propostas e
+não são compromissos de serviço.
 
 ## Functional Requirements
 
-- **RF-01 — Buscar cidades:** o sistema deve permitir que o usuário pesquise cidades e selecione a localização correta entre os resultados disponíveis.
-- **RF-02 — Consultar clima atual:** após a seleção de uma cidade, o sistema deve apresentar as condições meteorológicas atuais correspondentes à localização selecionada.
-- **RF-03 — Consultar previsão de cinco dias:** após a seleção de uma cidade, o sistema deve apresentar a previsão para o dia da consulta e os quatro dias seguintes.
-- **RF-04 — Alternar unidade de temperatura:** o sistema deve permitir alternar entre Celsius e Fahrenheit e atualizar as temperaturas exibidas.
+- **RF-01 — Pesquisar e selecionar cidade:** permitir busca por envio explícito
+  de consulta e seleção de um resultado. Exibir nome da cidade e metadados
+  geográficos disponíveis para distinguir localidades homônimas.
+- **RF-02 — Consultar clima atual:** para a cidade selecionada, apresentar
+  temperatura, condição meteorológica, umidade, vento, pressão e precipitação,
+  conforme dados fornecidos pela fonte.
+- **RF-03 — Consultar previsão diária:** apresentar cinco dias consecutivos,
+  começando na data local atual da cidade selecionada. Cada dia inclui
+  temperatura mínima e máxima, condição meteorológica e precipitação.
+- **RF-04 — Alternar unidade de temperatura:** permitir alternar entre Celsius
+  e Fahrenheit para todas as temperaturas atuais e previstas. A troca não deve
+  exigir nova consulta meteorológica.
+- **RF-05 — Comunicar estados e falhas:** informar carregamento, resultado
+  vazio e falhas de busca ou de consulta meteorológica; oferecer nova tentativa
+  quando a falha puder ser repetida.
 
 ## User Stories
 
-- **US-01 — RF-01:** Como viajante planejador, quero buscar e selecionar a cidade de destino para consultar as informações meteorológicas daquele local.
-- **US-02 — RF-02:** Como decisor do dia a dia, quero consultar o clima atual da minha cidade para decidir rapidamente como me vestir ou se levo guarda-chuva.
-- **US-03 — RF-03:** Como viajante planejador, quero consultar a previsão de hoje e dos quatro dias seguintes para organizar minha semana.
-- **US-04 — RF-01:** Como viajante planejador, quero distinguir localidades com nomes iguais nos resultados para selecionar a cidade correta para minha viagem.
-- **US-05 — RF-04:** Como decisor do dia a dia, quero alternar entre Celsius e Fahrenheit para interpretar rapidamente as temperaturas na unidade que prefiro.
+- **US-01 — RF-01:** Como viajante, quero pesquisar e selecionar uma cidade
+  para consultar o clima do local correto.
+- **US-02 — RF-01:** Como viajante, quero distinguir cidades homônimas antes
+  de selecioná-las.
+- **US-03 — RF-02:** Como usuário, quero consultar as condições atuais de uma
+  cidade selecionada para orientar minhas atividades.
+- **US-04 — RF-03:** Como viajante, quero consultar os próximos cinco dias
+  locais para planejar minha semana.
+- **US-05 — RF-04:** Como usuário, quero alternar entre Celsius e Fahrenheit
+  para ler as temperaturas na unidade que prefiro.
+- **US-06 — RF-05:** Como usuário, quero entender quando uma consulta está
+  carregando ou falhou e poder tentar novamente.
 
 ## Acceptance Criteria
 
-- **CA-01 — RF-01 / US-01, US-04:**
-  - **Given** uma consulta de cidade com resultados disponíveis, **When** o usuário envia a consulta, **Then** o sistema apresenta esses resultados para seleção.
-  - **Given** uma consulta de cidade sem resultados correspondentes, **When** o usuário envia a consulta, **Then** o sistema informa que nenhuma cidade correspondente foi encontrada.
-  - **Given** resultados para cidades com o mesmo nome e metadados de localização disponíveis, **When** o sistema apresenta os resultados, **Then** cada resultado exibe os metadados disponíveis que permitem distingui-los, como região ou país.
-  - **Given** resultados de busca apresentados, **When** o usuário seleciona um deles, **Then** as consultas meteorológicas seguintes usam a localização do resultado selecionado.
+### CA-01 — Busca e seleção (RF-01, US-01, US-02)
 
-- **CA-02 — RF-02 / US-02:**
-  - **Given** uma cidade selecionada e uma resposta válida de clima atual para sua localização, **When** os dados são carregados, **Then** o sistema apresenta as condições atuais correspondentes à localização selecionada.
-  - **Given** que o usuário ainda não alterou a unidade de temperatura, **When** a temperatura atual é apresentada, **Then** ela é exibida em Celsius.
-  - **Given** que os dados atuais não podem ser obtidos, **When** a consulta termina com falha, **Then** o sistema informa que não foi possível carregar o clima atual e não apresenta dados anteriores como atuais.
+- Ao enviar uma consulta com espaços no início ou no fim, o sistema pesquisa o
+  texto sem esses espaços.
+- Ao enviar uma consulta vazia ou composta somente por espaços, o sistema não
+  inicia uma busca e informa que é necessário digitar o nome de uma cidade.
+- Enquanto a busca está em andamento, a interface identifica o estado de
+  carregamento e impede que uma resposta anterior seja apresentada como
+  resultado da consulta atual.
+- Com resultados, cada opção apresenta o nome da localidade e os dados
+  geográficos disponíveis para diferenciá-la (por exemplo, região e país).
+- Sem resultados, a interface informa que nenhuma cidade correspondente foi
+  encontrada; esse estado não é apresentado como erro de conexão.
+- Ao selecionar um resultado, o nome e a identidade geográfica selecionados
+  permanecem associados às consultas meteorológicas subsequentes. Selecionar
+  outra cidade substitui a seleção anterior.
+- Se a busca falhar por conexão, timeout ou indisponibilidade da fonte, a
+  interface apresenta uma mensagem de falha distinta do resultado vazio e
+  oferece ação para repetir a mesma busca.
 
-- **CA-03 — RF-03 / US-03:**
-  - **Given** uma cidade selecionada e uma resposta válida de previsão para sua localização, **When** a previsão é carregada, **Then** o sistema apresenta exatamente cinco datas consecutivas, começando no dia da consulta e incluindo os quatro dias seguintes.
-  - **Given** a previsão carregada para uma cidade selecionada, **When** cada data é apresentada, **Then** seus dados correspondem à previsão daquela localização e daquela data.
-  - **Given** uma unidade de temperatura selecionada, **When** as temperaturas da previsão são apresentadas, **Then** elas são exibidas nessa unidade.
-  - **Given** que a previsão não pode ser obtida, **When** a consulta termina com falha, **Then** o sistema informa que não foi possível carregar a previsão.
+### CA-02 — Clima atual (RF-02, US-03)
 
-- **CA-04 — RF-04 / US-05:**
-  - **Given** que a aplicação foi iniciada e nenhuma unidade foi alterada, **When** temperaturas são apresentadas, **Then** elas são exibidas em Celsius.
-  - **Given** temperaturas atuais e de previsão exibidas em Celsius, **When** o usuário alterna a unidade para Fahrenheit, **Then** as temperaturas atuais e da previsão passam a ser exibidas em Fahrenheit.
-  - **Given** temperaturas atuais e de previsão exibidas em Fahrenheit, **When** o usuário alterna a unidade para Celsius, **Then** as temperaturas atuais e da previsão passam a ser exibidas em Celsius.
-  - **Given** uma cidade selecionada e um período de previsão apresentado, **When** o usuário alterna a unidade, **Then** a cidade selecionada e as cinco datas da previsão permanecem inalteradas.
+- Com uma cidade selecionada e dados válidos, a interface exibe os seis campos
+  definidos em RF-02 para essa cidade.
+- A temperatura inicial é apresentada em Celsius. A condição meteorológica e
+  os rótulos dos campos são apresentados em pt-BR.
+- Se um campo estiver ausente ou inválido na resposta, o campo é
+  identificado como indisponível e os demais campos válidos continuam visíveis.
+- Se os dados atuais não puderem ser obtidos, a interface informa a falha e não
+  apresenta dados de outra cidade nem dados anteriores como atuais. A ação de
+  nova tentativa consulta a cidade ainda selecionada.
+
+### CA-03 — Previsão diária (RF-03, US-04)
+
+- Com uma cidade selecionada e uma previsão válida, são exibidas exatamente
+  cinco datas consecutivas: a data local atual da cidade e as quatro seguintes.
+- A data local é determinada para a cidade selecionada, não pelo fuso horário
+  do dispositivo do usuário. A sequência permanece correta ao atravessar mês
+  ou ano.
+- Cada data é associada à sua temperatura mínima, máxima, condição e
+  precipitação. Valores ausentes ou inválidos são identificados como
+  indisponíveis sem deslocar os dados para outra data.
+- Se a fonte não fornecer cinco datas consecutivas, a previsão é marcada como
+  indisponível; não se completa a lista com datas duplicadas ou dados de outro
+  intervalo.
+- Se a previsão falhar, a interface informa a falha e oferece nova tentativa
+  para a cidade selecionada. A falha da previsão não altera os dados atuais
+  válidos, e vice-versa.
+
+### CA-04 — Unidades (RF-04, US-05)
+
+- Quando não houver preferência de unidade previamente definida, a unidade
+  inicial é Celsius.
+- Alternar a unidade atualiza imediatamente todas as temperaturas visíveis do
+  clima atual e da previsão, sem esperar por nova resposta de rede e sem
+  alterar cidade ou datas.
+- Alternar repetidamente entre as unidades não acumula erro de arredondamento:
+  cada apresentação é calculada a partir do valor meteorológico de origem.
+- A alternância afeta temperaturas; não altera a unidade de umidade, vento,
+  pressão ou precipitação.
+- A unidade selecionada continua ativa enquanto o usuário consulta outras
+  cidades na mesma sessão.
+
+### CA-05 — Estados e erros (RF-05, US-06)
+
+- Durante cada consulta, o conteúdo afetado apresenta um estado de
+  carregamento perceptível e não comunica sucesso antes de receber dados
+  válidos.
+- Busca, clima atual e previsão distinguem sucesso, ausência de resultados e
+  falha. Uma falha em uma seção não oculta dados válidos de outra seção.
+- A ação de repetir uma consulta reenvia a mesma busca ou consulta para a
+  cidade selecionada; o usuário não precisa selecioná-la novamente.
+- Ao trocar a cidade, dados da cidade anterior deixam de ser apresentados como
+  dados da nova seleção enquanto a nova consulta carrega ou após uma falha.
 
 ## Non-Functional Requirements
 
-- **RNF-01 — Responsividade e uso móvel:** a interface e suas funcionalidades principais devem ser utilizáveis em dispositivos móveis. Como critério inicial sujeito a validação, não deve haver rolagem horizontal em telas com largura de 320 px ou mais.
-- **RNF-02 — Usabilidade:** busca, consulta meteorológica e alternância de unidade devem ser compreensíveis e acessíveis. Critérios quantitativos de usabilidade ainda precisam ser definidos.
-- **RNF-03 — Disponibilidade e resiliência:** como meta inicial sujeita a validação, o serviço deve ter disponibilidade mensal de pelo menos 99,9%, excluindo manutenção programada. A interface deve comunicar falhas da conexão ou da fonte de dados e não deve apresentar dados desatualizados como atuais.
-- **RNF-04 — Desempenho:** como meta inicial sujeita a validação, os resultados da busca devem ser apresentados em até 2 segundos no percentil 95, em condições normais de rede. Também devem ser definidos limites para carregamento inicial e atualização de dados.
-- **RNF-05 — Acessibilidade:** como objetivo inicial sujeito a validação, a interface deve atender ao nível AA das WCAG 2.2, incluindo navegação por teclado, contraste adequado e nomes acessíveis para controles.
-- **RNF-06 — Idioma:** os textos da interface devem estar em pt-BR.
+- **RNF-01 — Responsividade (critério proposto):** de 320 px de largura de
+  viewport até desktop, não há rolagem horizontal da página; busca, seleção,
+  consulta de dados e alternância de unidade permanecem utilizáveis. Validar
+  também com ampliação de 200%. Os limites e navegadores suportados precisam de
+  aprovação antes de se tornarem compromisso de compatibilidade.
+- **RNF-02 — Acessibilidade (meta proposta):** objetivo de conformidade WCAG
+  2.2 nível AA. Os fluxos de busca, seleção, consulta e alternância devem ser
+  operáveis por teclado, ter foco visível, nomes acessíveis e estados de
+  carregamento/erro anunciáveis por tecnologia assistiva. A meta requer
+  aprovação e validação manual, além de verificações automatizadas.
+- **RNF-03 — Desempenho (meta proposta):** apresentar resultados de busca em
+  até 2 segundos no percentil 95, medidos desde o envio até a apresentação dos
+  resultados, em perfil de rede acordado. O perfil, o período de medição, a
+  meta de carregamento inicial e o tratamento da latência da Open-Meteo devem
+  ser definidos antes de usar a meta como critério de aceite.
+- **RNF-04 — Disponibilidade e resiliência:** não apresentar erro da fonte
+  como “nenhum resultado”; não apresentar dados de outra cidade ou dados
+  anteriores como atuais; disponibilizar nova tentativa para falhas repetíveis.
+  Uma meta de disponibilidade mensal de 99,9% foi sugerida, mas não aprovada.
+  A disponibilidade do site e a da fonte externa devem ser medidas e reportadas
+  separadamente, caso essa meta seja aprovada.
+- **RNF-05 — Idioma e formatos:** textos, mensagens, nomes de dias e datas da
+  interface são apresentados em pt-BR. Temperaturas exibem explicitamente °C ou
+  °F, conforme a unidade selecionada.
 
 ## Edge Cases
 
-- A consulta de cidade não retorna resultados.
-- A busca retorna cidades com nomes iguais ou semelhantes.
-- O usuário envia uma consulta vazia ou composta apenas por espaços.
-- A conexão falha ou a fonte meteorológica fica indisponível.
-- A resposta da fonte de dados está vazia, incompleta ou inválida.
-- A solicitação excede o tempo de espera definido para a fonte de dados.
-- A fonte de dados não fornece informações atuais ou previsão para alguma data solicitada.
-- O usuário alterna a unidade enquanto os dados estão carregando ou depois de um erro.
-- A previsão atravessa uma mudança de mês ou ano.
-- O usuário acessa a aplicação em uma tela estreita ou amplia o conteúdo.
+| Situação | Comportamento esperado |
+| --- | --- |
+| Consulta vazia ou só com espaços | Não pesquisar; informar que é necessário digitar uma cidade. |
+| Nenhuma cidade correspondente | Exibir estado vazio distinto de erro. |
+| Cidades homônimas | Exibir metadados geográficos disponíveis em cada opção. |
+| Busca ou consulta sem conexão, com timeout ou fonte indisponível | Exibir falha e permitir nova tentativa; não converter falha em vazio. |
+| Resposta parcial | Exibir cada campo válido; marcar campo ausente como indisponível. |
+| Resposta sem cinco datas consecutivas | Marcar previsão indisponível; não inventar ou duplicar datas. |
+| Alternância de unidade durante carregamento ou falha | Aplicar a unidade escolhida aos dados que forem exibidos; não alterar seleção nem ocultar o erro. |
+| Mudança de cidade durante consulta | Não associar resposta da cidade anterior à seleção atual. |
+| Virada de mês ou ano | Manter cinco datas locais consecutivas, sem lacunas ou duplicatas. |
+| Tela estreita ou ampliação | Preservar acesso aos controles e conteúdo sem rolagem horizontal no limite definido em RNF-01. |
 
 ## Assumptions
 
-- A fonte de dados meteorológicos é Open-Meteo, sem necessidade de API key.
-- A consulta meteorológica acontece para uma cidade selecionada pelo usuário.
-- “Cinco dias” significa o dia da consulta e os quatro dias seguintes.
-- A unidade padrão para temperatura é Celsius.
-- A alternância Celsius/Fahrenheit aplica-se à temperatura. A aplicação a outras medidas meteorológicas não foi definida.
-- A aplicação não exige autenticação e não armazena dados do usuário no servidor.
-- A interface é uma aplicação web responsiva; suporte a aplicativo nativo não foi solicitado.
-- As metas numéricas de desempenho, disponibilidade, largura mínima de tela e o objetivo de acessibilidade são propostas iniciais, não compromissos aprovados.
+- Open-Meteo é a fonte de geocodificação e dados meteorológicos; não é
+  necessária chave de API.
+- A consulta meteorológica só ocorre após a seleção de uma cidade.
+- “Cinco dias” significa hoje e os quatro dias seguintes, segundo a data local
+  da cidade selecionada.
+- Celsius e Fahrenheit são as únicas unidades de temperatura nesta versão;
+  Celsius é o padrão quando não há preferência de unidade definida.
+- A escolha da unidade é mantida durante a sessão, mas sua persistência entre
+  sessões não está definida.
+- A aplicação é web responsiva; aplicativo nativo, autenticação e
+  armazenamento de dados do usuário no servidor não fazem parte do produto.
+- As metas marcadas como propostas não são compromissos aprovados.
 
 ## Risks
 
-- **Ambiguidade na busca:** nomes repetidos ou variações de escrita podem levar à seleção de uma localização incorreta. Mitigação proposta: apresentar informações de localização disponíveis junto aos resultados.
-- **Indisponibilidade ou desatualização dos dados:** falhas de conexão ou da fonte podem impedir consultas confiáveis. Mitigação proposta: comunicar a falha e não apresentar dados antigos como atuais.
-- **Conteúdo da previsão indefinido:** a falta de decisão sobre os campos exibidos pode gerar uma experiência incompleta ou inconsistente. Mitigação proposta: aprovar os campos antes de considerar a especificação final.
-- **Cobertura geográfica incerta:** países e localidades cobertos pela busca ainda não foram definidos. Mitigação proposta: confirmar a cobertura esperada e validá-la contra a fonte de dados.
-- **Experiência móvel insuficiente:** dispositivos, navegadores e dimensões-alvo ainda não foram aprovados. Mitigação proposta: validar o critério inicial de responsividade com as partes interessadas.
-- **Metas de qualidade não validadas:** objetivos de performance, disponibilidade e acessibilidade podem não refletir as necessidades do produto ou as limitações da fonte. Mitigação proposta: validar as metas antes de tratá-las como requisitos contratuais.
-- **Interpretação inconsistente das unidades:** não estão definidos arredondamento, precisão nem o escopo da conversão. Mitigação proposta: definir regras de apresentação e confirmar se a alternância afeta somente temperaturas.
+- **Localidades ambíguas ou cobertura geográfica limitada:** mostrar metadados
+  disponíveis reduz seleção incorreta; cobertura de países precisa ser
+  confirmada.
+- **Indisponibilidade ou latência da fonte externa:** tratar falhas separadas
+  de resultados vazios e manter a interface recuperável por nova tentativa.
+- **Dados parciais ou datas inconsistentes:** sinalizar campos ausentes e não
+  apresentar previsão incompleta como cinco dias completos.
+- **Metas operacionais não aprovadas:** evitar assumir SLO de disponibilidade,
+  desempenho ou compatibilidade até definir responsável, escopo e método de
+  medição.
 
 ## Out of Scope
 
-- Aplicativo móvel nativo.
-- Autenticação, contas de usuário ou sincronização entre dispositivos.
-- Persistência de dados do usuário no servidor.
-- Alertas meteorológicos ou notificações.
-- Mapas, radar meteorológico ou camadas geográficas.
-- Recomendações, previsões personalizadas ou análises históricas.
+- Aplicativo móvel nativo, autenticação, contas, sincronização ou persistência
+  de dados do usuário no servidor.
+- Geolocalização automática, favoritos ou histórico de cidades.
+- Alertas, notificações, mapas, radar, análises históricas ou recomendações.
+- Conversão de unidades além de Celsius/Fahrenheit para temperatura.
 - Garantia de cobertura para países ou localidades ainda não confirmados.
-- Conversão de unidades meteorológicas além da temperatura, salvo decisão futura.
 
 ## Open Questions
 
-1. A busca deve aceitar cidades de qualquer país? Como o usuário deve escolher entre cidades com o mesmo nome?
-2. A busca deve sugerir resultados enquanto o usuário digita ou ocorrer somente após o envio da consulta?
-3. Quais informações devem compor o clima atual, além da temperatura e da condição meteorológica?
-4. Quais informações devem aparecer para cada dia da previsão? Temperaturas mínima e máxima e condição meteorológica são uma proposta de conteúdo a validar.
-5. Com que frequência as informações meteorológicas devem ser atualizadas?
-6. Qual deve ser o comportamento e o tempo limite quando a cidade não for encontrada, a conexão falhar ou a fonte de dados estiver indisponível?
-7. A unidade escolhida deve ser mantida entre consultas ou sessões?
-8. A alternância Celsius/Fahrenheit deve aplicar-se somente à temperatura?
-9. Qual precisão e regra de arredondamento devem ser usadas para temperaturas?
-10. Quais dispositivos, tamanhos de tela e navegadores móveis devem ser suportados?
-11. Há requisitos adicionais de localização, acessibilidade ou conformidade?
-12. As metas sugeridas de 2 segundos no percentil 95, 99,9% de disponibilidade mensal e WCAG 2.2 nível AA são adequadas? Quais metas de carregamento inicial e limites de uso devem ser atendidos?
-13. O critério sugerido de não haver rolagem horizontal a partir de 320 px é adequado? Quais orientações, navegadores e dispositivos devem ser suportados?
+1. A busca deve cobrir todos os países suportados pela fonte? Como apresentar
+   localidades quando faltarem metadados de desambiguação?
+2. Quais limites de tamanho e regras de correspondência da busca são exigidos,
+   incluindo acentos, transliteração e nomes em outros idiomas?
+3. Qual definição e unidade devem ser exibidas para precipitação atual e
+   diária, vento e pressão?
+4. Qual precisão e regra de arredondamento devem ser usadas para temperaturas?
+5. Com que frequência os dados devem ser atualizados automaticamente, se
+   houver atualização automática?
+6. A unidade escolhida deve persistir após recarregar ou reabrir a aplicação?
+7. Quais navegadores e versões são oficialmente suportados?
+8. As metas propostas de responsividade, WCAG 2.2 AA, p95 de 2 segundos e
+   disponibilidade mensal de 99,9% são aprovadas? Qual perfil de rede, SLO de
+   carregamento inicial, janela de medição e exclusões se aplicam?
