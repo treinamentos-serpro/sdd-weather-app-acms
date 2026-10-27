@@ -24,27 +24,27 @@ A aplicação usará Open-Meteo como fonte de dados, não exigirá autenticaçã
 ## Acceptance Criteria
 
 - **CA-01 — RF-01 / US-01, US-04:**
-  - Quando o usuário enviar uma consulta de cidade e houver resultados, o sistema apresenta os resultados disponíveis para seleção.
-  - Quando a consulta não produzir resultados, o sistema informa que nenhuma cidade correspondente foi encontrada.
-  - Quando houver resultados com nomes de cidade iguais, o sistema apresenta informações de localização disponíveis que ajudem a distingui-los, como região ou país.
-  - Ao selecionar um resultado, o sistema associa as consultas meteorológicas à localização selecionada.
+  - **Given** uma consulta de cidade com resultados disponíveis, **When** o usuário envia a consulta, **Then** o sistema apresenta esses resultados para seleção.
+  - **Given** uma consulta de cidade sem resultados correspondentes, **When** o usuário envia a consulta, **Then** o sistema informa que nenhuma cidade correspondente foi encontrada.
+  - **Given** resultados para cidades com o mesmo nome e metadados de localização disponíveis, **When** o sistema apresenta os resultados, **Then** cada resultado exibe os metadados disponíveis que permitem distingui-los, como região ou país.
+  - **Given** resultados de busca apresentados, **When** o usuário seleciona um deles, **Then** as consultas meteorológicas seguintes usam a localização do resultado selecionado.
 
 - **CA-02 — RF-02 / US-02:**
-  - Após uma seleção de cidade e uma resposta válida da fonte de dados, o sistema apresenta informações meteorológicas atuais associadas à cidade selecionada.
-  - A temperatura atual é exibida em Celsius inicialmente.
-  - Se os dados atuais não puderem ser obtidos, o sistema informa que não foi possível carregá-los e não apresenta dados desatualizados como atuais.
+  - **Given** uma cidade selecionada e uma resposta válida de clima atual para sua localização, **When** os dados são carregados, **Then** o sistema apresenta as condições atuais correspondentes à localização selecionada.
+  - **Given** que o usuário ainda não alterou a unidade de temperatura, **When** a temperatura atual é apresentada, **Then** ela é exibida em Celsius.
+  - **Given** que os dados atuais não podem ser obtidos, **When** a consulta termina com falha, **Then** o sistema informa que não foi possível carregar o clima atual e não apresenta dados anteriores como atuais.
 
 - **CA-03 — RF-03 / US-03:**
-  - Após uma seleção de cidade e uma resposta válida da fonte de dados, o sistema apresenta cinco datas consecutivas: o dia da consulta e os quatro dias seguintes.
-  - Cada data é associada à previsão correspondente à cidade selecionada.
-  - As temperaturas da previsão são exibidas na unidade selecionada pelo usuário.
-  - Se a previsão não puder ser obtida, o sistema informa que não foi possível carregá-la.
+  - **Given** uma cidade selecionada e uma resposta válida de previsão para sua localização, **When** a previsão é carregada, **Then** o sistema apresenta exatamente cinco datas consecutivas, começando no dia da consulta e incluindo os quatro dias seguintes.
+  - **Given** a previsão carregada para uma cidade selecionada, **When** cada data é apresentada, **Then** seus dados correspondem à previsão daquela localização e daquela data.
+  - **Given** uma unidade de temperatura selecionada, **When** as temperaturas da previsão são apresentadas, **Then** elas são exibidas nessa unidade.
+  - **Given** que a previsão não pode ser obtida, **When** a consulta termina com falha, **Then** o sistema informa que não foi possível carregar a previsão.
 
-- **CA-04 — RF-04 / US-04:**
-  - A unidade inicial da temperatura é Celsius.
-  - Quando o usuário alterna para Fahrenheit, as temperaturas atuais e da previsão passam a ser exibidas em Fahrenheit.
-  - Quando o usuário alterna para Celsius, as temperaturas atuais e da previsão passam a ser exibidas em Celsius.
-  - A alternância de unidade não altera a cidade selecionada nem o período da previsão.
+- **CA-04 — RF-04 / US-05:**
+  - **Given** que a aplicação foi iniciada e nenhuma unidade foi alterada, **When** temperaturas são apresentadas, **Then** elas são exibidas em Celsius.
+  - **Given** temperaturas atuais e de previsão exibidas em Celsius, **When** o usuário alterna a unidade para Fahrenheit, **Then** as temperaturas atuais e da previsão passam a ser exibidas em Fahrenheit.
+  - **Given** temperaturas atuais e de previsão exibidas em Fahrenheit, **When** o usuário alterna a unidade para Celsius, **Then** as temperaturas atuais e da previsão passam a ser exibidas em Celsius.
+  - **Given** uma cidade selecionada e um período de previsão apresentado, **When** o usuário alterna a unidade, **Then** a cidade selecionada e as cinco datas da previsão permanecem inalteradas.
 
 ## Non-Functional Requirements
 
